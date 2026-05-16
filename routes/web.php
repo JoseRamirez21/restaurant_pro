@@ -8,47 +8,45 @@ $controlador = $partes[0] ?? '';
 $accion      = $partes[1] ?? 'index';
 $param       = $partes[2] ?? null;
 
-// Si no hay controlador, ir al login
-if (empty($controlador)) {
-    $controlador = 'login';
-}
+if (empty($controlador)) $controlador = 'login';
 
 $rutas = [
-    'login'      => ['clase' => 'AuthController',   'accion' => 'login'],
-    'logout'     => ['clase' => 'AuthController',   'accion' => 'logout'],
-    'admin'      => ['clase' => 'AdminController',  'accion' => 'index'],
-    'mesas'      => ['clase' => 'MesaController',   'accion' => 'index'],
-    'pedidos'    => ['clase' => 'PedidoController', 'accion' => 'index'],
-    'productos'  => ['clase' => 'ProductoController','accion' => 'index'],
-    'cocina'     => ['clase' => 'CocinaController', 'accion' => 'index'],
-    'caja'       => ['clase' => 'CajaController',   'accion' => 'index'],
-    'sin-acceso' => ['clase' => 'AuthController',   'accion' => 'sinAcceso'],
+    'login'      => 'AuthController',
+    'logout'     => 'AuthController',
+    'admin'      => 'AdminController',
+    'mesas'      => 'MesaController',
+    'pedidos'    => 'PedidoController',
+    'productos'  => 'ProductoController',
+    'cocina'     => 'CocinaController',
+    'caja'       => 'CajaController',
+    'sin-acceso' => 'AuthController',
 ];
 
 if (!array_key_exists($controlador, $rutas)) {
     http_response_code(404);
-    die('<h2>Página no encontrada</h2><a href="' . APP_URL . '">Volver</a>');
+    die('<h2 style="font-family:sans-serif;padding:2rem">Página no encontrada</h2>
+         <a href="' . APP_URL . '">Volver al inicio</a>');
 }
 
-$clase   = $rutas[$controlador]['clase'];
-$metodo  = $rutas[$controlador]['accion'];
-
-// Si hay segmento extra en URL, usarlo como acción (ej: /admin/usuarios)
-if (!empty($partes[1]) && $controlador !== 'logout') {
-    $metodo = $partes[1];
-}
-
+$clase   = $rutas[$controlador];
 $archivo = APP_PATH . '/controllers/' . $clase . '.php';
 
 if (!file_exists($archivo)) {
-    die('Controlador no encontrado: ' . $clase);
+    die('Controlador no encontrado: ' . htmlspecialchars($clase));
 }
 
 require_once $archivo;
 $obj = new $clase();
 
-if (method_exists($obj, $metodo)) {
-    $obj->$metodo($param);
+// logout directo
+if ($controlador === 'logout') {
+    $obj->logout();
+    exit;
+}
+
+// Ejecutar método según URL
+if (!empty($accion) && $accion !== 'index' && method_exists($obj, $accion)) {
+    $obj->$accion($param);
 } else {
     $obj->index($param);
 }
