@@ -182,6 +182,9 @@ $seccion    = explode('/', $url_actual)[0] ?? 'admin';
         <span class="nav-badge"><?= $mesas_ocupadas ?></span>
         <?php endif; ?>
     </a>
+        <a href="<?= APP_URL ?>/mesas/gestionar" class="nav-link">
+        <i class="bi bi-pencil-square"></i>Gestionar mesas
+    </a>
     <a href="<?= APP_URL ?>/cocina"  class="nav-link <?= $seccion === 'cocina'  ? 'active' : '' ?>">
         <i class="bi bi-fire"></i>Cocina
         <?php if (!empty($cocina_pendientes) && $cocina_pendientes > 0): ?>
@@ -199,7 +202,7 @@ $seccion    = explode('/', $url_actual)[0] ?? 'admin';
     <a href="#" class="nav-link">
         <i class="bi bi-box-seam"></i>Inventario
     </a>
-    <a href="#" class="nav-link">
+    <a href="<?= APP_URL ?>/usuarios" class="nav-link <?= $seccion === 'usuarios' ? 'active' : '' ?>">
         <i class="bi bi-people"></i>Personal
     </a>
     <a href="#" class="nav-link">

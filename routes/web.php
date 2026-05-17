@@ -19,6 +19,7 @@ $rutas = [
     'productos'  => 'ProductoController',
     'cocina'     => 'CocinaController',
     'caja'       => 'CajaController',
+    'usuarios'   => 'UsuarioController',
     'sin-acceso' => 'AuthController',
 ];
 
@@ -38,13 +39,11 @@ if (!file_exists($archivo)) {
 require_once $archivo;
 $obj = new $clase();
 
-// logout directo
 if ($controlador === 'logout') {
     $obj->logout();
     exit;
 }
 
-// Ejecutar método según URL
 if (!empty($accion) && $accion !== 'index' && method_exists($obj, $accion)) {
     $obj->$accion($param);
 } else {

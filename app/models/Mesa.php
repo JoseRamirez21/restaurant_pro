@@ -4,9 +4,7 @@ class Mesa {
     public static function todas(): array {
         $db = Database::getInstance()->getConnection();
         $sql = "SELECT m.*,
-                    p.id AS pedido_id,
-                    p.personas,
-                    p.total,
+                    p.id AS pedido_id, p.personas, p.total,
                     p.creado_en AS pedido_inicio,
                     u.nombre AS mesero_nombre
                 FROM mesas m
@@ -17,12 +15,23 @@ class Mesa {
         return $db->query($sql)->fetchAll();
     }
 
+    // Para el CRUD admin — incluye inactivas
+    public static function todasAdmin(): array {
+        $db = Database::getInstance()->getConnection();
+        $sql = "SELECT m.*,
+                    COUNT(p.id) AS pedidos_totales
+                FROM mesas m
+                LEFT JOIN pedidos p ON p.mesa_id = m.id AND p.estado = 'cerrado'
+                WHERE m.activo = 1
+                GROUP BY m.id
+                ORDER BY m.numero ASC";
+        return $db->query($sql)->fetchAll();
+    }
+
     public static function buscarPorId(int $id): array|false {
         $db = Database::getInstance()->getConnection();
         $sql = "SELECT m.*,
-                    p.id AS pedido_id,
-                    p.personas,
-                    p.total,
+                    p.id AS pedido_id, p.personas, p.total,
                     p.estado AS pedido_estado,
                     p.creado_en AS pedido_inicio
                 FROM mesas m
@@ -42,15 +51,13 @@ class Mesa {
     public static function crear(array $datos): int {
         $db = Database::getInstance()->getConnection();
         $sql = "INSERT INTO mesas (numero, nombre, capacidad, zona, pos_x, pos_y, activo)
-                VALUES (:numero, :nombre, :capacidad, :zona, :pos_x, :pos_y, 1)";
+                VALUES (:numero, :nombre, :capacidad, :zona, 0, 0, 1)";
         $stmt = $db->prepare($sql);
         $stmt->execute([
             ':numero'    => $datos['numero'],
             ':nombre'    => $datos['nombre']    ?? 'Mesa ' . $datos['numero'],
             ':capacidad' => $datos['capacidad'] ?? 4,
             ':zona'      => $datos['zona']      ?? 'salon_principal',
-            ':pos_x'     => $datos['pos_x']     ?? 0,
-            ':pos_y'     => $datos['pos_y']     ?? 0,
         ]);
         return (int) $db->lastInsertId();
     }
@@ -83,8 +90,13 @@ class Mesa {
         $db = Database::getInstance()->getConnection();
         $sql = "SELECT estado, COUNT(*) AS total FROM mesas WHERE activo = 1 GROUP BY estado";
         $rows = $db->query($sql)->fetchAll();
-        $res = ['libre' => 0, 'ocupada' => 0, 'reservada' => 0, 'mantenimiento' => 0];
-        foreach ($rows as $r) $res[$r['estado']] = (int)$r['total'];
+        $res  = ['libre' => 0, 'ocupada' => 0, 'reservada' => 0, 'mantenimiento' => 0,
+                 'libres' => 0, 'ocupadas' => 0, 'reservadas' => 0, 'total' => 0];
+        foreach ($rows as $r) {
+            $res[$r['estado']]           = (int)$r['total'];
+            $res[$r['estado'] . 's']     = (int)$r['total']; // versión plural
+            $res['total']               += (int)$r['total'];
+        }
         return $res;
     }
 }
