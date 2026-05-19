@@ -199,6 +199,9 @@ $seccion    = explode('/', $url_actual)[0] ?? 'admin';
     <a href="<?= APP_URL ?>/productos" class="nav-link <?= $seccion === 'productos' ? 'active' : '' ?>">
         <i class="bi bi-menu-button-wide"></i>Carta & Menú
     </a>
+    <a href="<?= APP_URL ?>/categorias" class="nav-link <?= $seccion === 'categorias' ? 'active' : '' ?>">
+        <i class="bi bi-tags"></i>Categorías
+    </a>
     <a href="#" class="nav-link">
         <i class="bi bi-box-seam"></i>Inventario
     </a>
@@ -210,8 +213,8 @@ $seccion    = explode('/', $url_actual)[0] ?? 'admin';
     </a>
 
     <div class="nav-section">Reportes</div>
-    <a href="#" class="nav-link">
-        <i class="bi bi-bar-chart-line"></i>Ventas
+    <a href="<?= APP_URL ?>/reportes" class="nav-link <?= $seccion === 'reportes' ? 'active' : '' ?>">
+        <i class="bi bi-bar-chart-line"></i>Reportes & Ventas
     </a>
     <a href="#" class="nav-link">
         <i class="bi bi-graph-up"></i>Analítica
@@ -235,6 +238,9 @@ $seccion    = explode('/', $url_actual)[0] ?? 'admin';
                     <?= ucfirst($_SESSION['rol'] ?? '') ?>
                 </div>
             </div>
+            <a href="<?= APP_URL ?>/perfil" class="btn btn-sm" style="color:rgba(255,255,255,.4);" title="Mi perfil">
+                <i class="bi bi-person-circle"></i>
+            </a>
             <a href="<?= APP_URL ?>/logout"
                class="btn btn-sm"
                style="color:rgba(255,255,255,.35);"

@@ -1,14 +1,8 @@
 
 <?php
 // Solo para autocompletado del editor — no afecta el sistema
-/** @var array $mesas */
-/** @var array $pedido */
-/** @var array $detalle */
-/** @var array $productos */
-/** @var array $categorias */
 /** @var array $comandas */
-?>
-<!DOCTYPE html>
+?><!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -156,5 +150,7 @@ reloj(); setInterval(reloj, 1000);
 // Auto-refrescar cada 30 segundos
 setTimeout(() => location.reload(), 30000);
 </script>
+<script>window.APP_URL = "<?= APP_URL ?>";</script>
+<script src="<?= APP_URL ?>/public/js/notificaciones.js"></script>
 </body>
 </html>
