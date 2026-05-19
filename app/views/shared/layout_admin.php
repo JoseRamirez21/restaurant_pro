@@ -202,13 +202,13 @@ $seccion    = explode('/', $url_actual)[0] ?? 'admin';
     <a href="<?= APP_URL ?>/categorias" class="nav-link <?= $seccion === 'categorias' ? 'active' : '' ?>">
         <i class="bi bi-tags"></i>Categorías
     </a>
-    <a href="#" class="nav-link">
+    <a href="<?= APP_URL ?>/inventario" class="nav-link <?= $seccion === 'inventario' ? 'active' : '' ?>">
         <i class="bi bi-box-seam"></i>Inventario
     </a>
     <a href="<?= APP_URL ?>/usuarios" class="nav-link <?= $seccion === 'usuarios' ? 'active' : '' ?>">
         <i class="bi bi-people"></i>Personal
     </a>
-    <a href="#" class="nav-link">
+    <a href="<?= APP_URL ?>/reservas" class="nav-link <?= $seccion === 'reservas' ? 'active' : '' ?>">
         <i class="bi bi-calendar-check"></i>Reservas
     </a>
 

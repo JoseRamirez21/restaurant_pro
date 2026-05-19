@@ -11,20 +11,22 @@ $param       = $partes[2] ?? null;
 if (empty($controlador)) $controlador = 'login';
 
 $rutas = [
-    'login'           => 'AuthController',
-    'logout'          => 'AuthController',
-    'admin'           => 'AdminController',
-    'mesas'           => 'MesaController',
-    'pedidos'         => 'PedidoController',
-    'productos'       => 'ProductoController',
-    'categorias'      => 'CategoriaController',
-    'cocina'          => 'CocinaController',
-    'caja'            => 'CajaController',
-    'usuarios'        => 'UsuarioController',
-    'reportes'        => 'ReporteController',
-    'perfil'          => 'PerfilController',
-    'notificaciones'  => 'NotificacionController',
-    'sin-acceso'      => 'AuthController',
+    'login'          => 'AuthController',
+    'logout'         => 'AuthController',
+    'admin'          => 'AdminController',
+    'mesas'          => 'MesaController',
+    'pedidos'        => 'PedidoController',
+    'productos'      => 'ProductoController',
+    'categorias'     => 'CategoriaController',
+    'cocina'         => 'CocinaController',
+    'caja'           => 'CajaController',
+    'usuarios'       => 'UsuarioController',
+    'reportes'       => 'ReporteController',
+    'reservas'       => 'ReservaController',
+    'inventario'     => 'InventarioController',
+    'perfil'         => 'PerfilController',
+    'notificaciones' => 'NotificacionController',
+    'sin-acceso'     => 'AuthController',
 ];
 
 if (!array_key_exists($controlador, $rutas)) {
@@ -43,9 +45,7 @@ if (!file_exists($archivo)) {
 require_once $archivo;
 $obj = new $clase();
 
-if ($controlador === 'logout') {
-    $obj->logout(); exit;
-}
+if ($controlador === 'logout') { $obj->logout(); exit; }
 
 if (!empty($accion) && $accion !== 'index' && method_exists($obj, $accion)) {
     $obj->$accion($param);
