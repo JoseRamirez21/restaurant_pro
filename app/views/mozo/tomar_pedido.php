@@ -1,212 +1,470 @@
 <?php
 // Solo para autocompletado del editor — no afecta el sistema
 /** @var array $pedido */
-/** @var array $productos */
 /** @var array $categorias */
+/** @var array $productos */
+/** @var array $detalle */
 ?><!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedido — Mesa <?= $pedido['mesa_numero'] ?> — RestaurantePro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mesa <?= $pedido['mesa_numero'] ?> — RestaurantePro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        * { box-sizing:border-box; }
-        body { background:#f4f1eb; margin:0; }
-        .topbar { background:#2c1f3e; color:#fff; padding:.75rem 1rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:200; }
-        .layout { display:flex; height:calc(100vh - 52px); }
+        :root {
+            --purple: #8e44ad;
+            --dark:   #2c1f3e;
+            --bg:     #f4f1eb;
+        }
+        * { box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { height:100%; margin:0; background:var(--bg); font-family:system-ui,sans-serif; overflow:hidden; }
 
-        /* CARTA (izquierda) */
-        .carta { flex:1; overflow-y:auto; padding:1rem; }
-        .cat-tabs { display:flex; gap:.5rem; overflow-x:auto; padding-bottom:.5rem; margin-bottom:.75rem; }
-        .cat-tabs::-webkit-scrollbar { height:4px; }
-        .cat-tab { border:1.5px solid #ddd; background:#fff; border-radius:20px; padding:.3rem .9rem; font-size:13px; white-space:nowrap; cursor:pointer; transition:all .2s; }
-        .cat-tab.active { background:#8e44ad; color:#fff; border-color:#8e44ad; }
-        .producto-card { background:#fff; border:1px solid #e0ddd6; border-radius:12px; padding:.9rem; display:flex; justify-content:space-between; align-items:center; margin-bottom:.6rem; cursor:pointer; transition:all .15s; }
-        .producto-card:hover { border-color:#8e44ad; transform:translateX(2px); }
-        .prod-nombre { font-size:14px; font-weight:500; margin-bottom:2px; }
-        .prod-desc { font-size:12px; color:#888; margin-bottom:4px; }
-        .prod-precio { font-size:15px; font-weight:600; color:#8e44ad; }
+        /* TOPBAR */
+        .topbar {
+            background:var(--dark); color:#fff;
+            padding:.6rem 1rem;
+            display:flex; align-items:center; justify-content:space-between;
+            height:52px; position:fixed; top:0; left:0; right:0; z-index:200;
+        }
+        .topbar-mesa { font-size:15px; font-weight:600; }
+        .topbar-meta { font-size:12px; opacity:.6; }
+
+        /* LAYOUT PRINCIPAL */
+        .layout {
+            display:flex;
+            height:calc(100vh - 52px);
+            margin-top:52px;
+        }
+
+        /* ── CARTA (izquierda) ── */
+        .carta {
+            flex:1;
+            display:flex;
+            flex-direction:column;
+            overflow:hidden;
+            border-right:1px solid #e0ddd6;
+            background:#fff;
+        }
+
+        /* Tabs de categoría — scrollables */
+        .cat-scroll {
+            display:flex;
+            gap:.4rem;
+            overflow-x:auto;
+            padding:.6rem .75rem;
+            border-bottom:1px solid #f0ede7;
+            background:#faf9f6;
+            -webkit-overflow-scrolling:touch;
+            scrollbar-width:none;
+        }
+        .cat-scroll::-webkit-scrollbar { display:none; }
+        .cat-tab {
+            flex-shrink:0;
+            border:2px solid #e0ddd6;
+            background:#fff;
+            border-radius:20px;
+            padding:.35rem .9rem;
+            font-size:13px;
+            font-weight:500;
+            cursor:pointer;
+            transition:all .15s;
+            white-space:nowrap;
+        }
+        .cat-tab.active {
+            background:var(--purple);
+            color:#fff;
+            border-color:var(--purple);
+        }
+
+        /* Grid de productos */
+        .productos-grid {
+            flex:1;
+            overflow-y:auto;
+            padding:.75rem;
+            display:grid;
+            grid-template-columns:repeat(auto-fill, minmax(150px,1fr));
+            gap:.6rem;
+            align-content:start;
+            -webkit-overflow-scrolling:touch;
+        }
+        .prod-card {
+            background:#fff;
+            border:2px solid #e8e5df;
+            border-radius:12px;
+            padding:.8rem .7rem;
+            cursor:pointer;
+            transition:all .15s;
+            display:flex;
+            flex-direction:column;
+            gap:4px;
+            user-select:none;
+        }
+        .prod-card:active { transform:scale(.96); background:#f9f5fd; border-color:var(--purple); }
+        .prod-card.sin-stock { opacity:.45; pointer-events:none; }
+        .prod-nombre { font-size:13px; font-weight:600; line-height:1.3; }
+        .prod-precio { font-size:14px; font-weight:700; color:var(--purple); }
         .prod-tiempo { font-size:11px; color:#aaa; }
-        .btn-agregar { background:#8e44ad; color:#fff; border:none; border-radius:8px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
 
-        /* PEDIDO (derecha) */
-        .pedido-panel { width:300px; background:#fff; border-left:1px solid #e0ddd6; display:flex; flex-direction:column; }
-        .pedido-header { padding:.9rem 1rem; border-bottom:1px solid #e0ddd6; }
-        .pedido-header h6 { margin:0; font-weight:600; font-size:14px; }
-        .pedido-items { flex:1; overflow-y:auto; padding:.75rem 1rem; }
-        .pedido-item { display:flex; align-items:center; gap:.6rem; margin-bottom:.6rem; font-size:13px; }
-        .pedido-item .cant { background:#f4f1eb; border-radius:6px; padding:2px 8px; font-weight:600; font-size:12px; }
-        .pedido-item .nombre { flex:1; }
-        .pedido-item .precio { color:#555; font-size:12px; }
-        .pedido-item .btn-quitar { background:none; border:none; color:#ccc; padding:0; cursor:pointer; font-size:16px; }
-        .pedido-item .btn-quitar:hover { color:#dc3545; }
-        .pedido-totales { padding:.75rem 1rem; border-top:1px solid #e0ddd6; font-size:13px; }
-        .pedido-totales .linea { display:flex; justify-content:space-between; margin-bottom:.3rem; color:#666; }
-        .pedido-totales .total { display:flex; justify-content:space-between; font-size:16px; font-weight:700; color:#2c1f3e; margin-top:.4rem; }
-        .pedido-footer { padding:.75rem 1rem; border-top:1px solid #e0ddd6; }
-        .btn-enviar { background:#28a745; color:#fff; border:none; border-radius:10px; padding:.65rem; font-size:14px; font-weight:500; width:100%; }
-        .btn-enviar:hover { background:#218838; }
-        .empty-pedido { text-align:center; color:#ccc; padding:2rem 1rem; }
+        /* ── PANEL PEDIDO (derecha) ── */
+        .pedido-panel {
+            width:280px;
+            display:flex;
+            flex-direction:column;
+            background:#fff;
+        }
+        .pedido-header {
+            padding:.75rem 1rem;
+            border-bottom:1px solid #f0ede7;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+        }
+        .pedido-header h6 { margin:0; font-size:14px; font-weight:600; }
+        .pedido-items {
+            flex:1;
+            overflow-y:auto;
+            padding:.5rem .75rem;
+            -webkit-overflow-scrolling:touch;
+        }
+        .pedido-item {
+            display:flex;
+            align-items:center;
+            gap:.5rem;
+            padding:.45rem 0;
+            border-bottom:1px solid #f7f5f0;
+            font-size:13px;
+        }
+        .pedido-item:last-child { border-bottom:none; }
+        .item-cant {
+            background:#f4f1eb;
+            border-radius:6px;
+            padding:2px 7px;
+            font-weight:600;
+            font-size:12px;
+            flex-shrink:0;
+        }
+        .item-nombre { flex:1; font-size:13px; line-height:1.2; }
+        .item-precio { font-size:12px; color:#888; flex-shrink:0; }
+        .btn-quitar {
+            background:none; border:none;
+            color:#ccc; font-size:18px;
+            padding:0 2px; cursor:pointer;
+            line-height:1; flex-shrink:0;
+        }
+        .btn-quitar:active { color:#dc3545; }
 
-        /* Responsive: en móvil el panel baja */
-        @media (max-width: 768px) {
+        /* Controles cantidad inline */
+        .ctrl-cant {
+            display:flex; align-items:center; gap:3px;
+        }
+        .ctrl-btn {
+            width:24px; height:24px;
+            border-radius:50%;
+            border:1.5px solid #e0ddd6;
+            background:#fff;
+            font-size:14px;
+            display:flex; align-items:center; justify-content:center;
+            cursor:pointer; flex-shrink:0;
+            transition:all .1s;
+        }
+        .ctrl-btn:active { background:var(--purple); color:#fff; border-color:var(--purple); }
+
+        /* Totales */
+        .pedido-totales {
+            padding:.75rem 1rem;
+            border-top:1px solid #f0ede7;
+            background:#faf9f6;
+        }
+        .tot-row { display:flex; justify-content:space-between; font-size:12px; color:#888; margin-bottom:2px; }
+        .tot-final { display:flex; justify-content:space-between; font-size:16px; font-weight:700; color:var(--dark); margin-top:4px; }
+
+        /* Botones de acción */
+        .pedido-footer { padding:.75rem; display:flex; flex-direction:column; gap:.5rem; }
+        .btn-cocina {
+            background:#28a745; color:#fff;
+            border:none; border-radius:10px;
+            padding:.7rem; font-size:14px; font-weight:600;
+            width:100%; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; gap:6px;
+        }
+        .btn-cocina:active { background:#218838; }
+        .btn-cocina:disabled { background:#ccc; cursor:not-allowed; }
+        .btn-cuenta {
+            background:#f4f1eb; color:var(--dark);
+            border:1.5px solid #e0ddd6;
+            border-radius:10px;
+            padding:.55rem; font-size:13px; font-weight:500;
+            width:100%; cursor:pointer;
+        }
+        .btn-cuenta:active { background:#e0ddd6; }
+
+        /* Empty state */
+        .empty-cart { text-align:center; padding:2rem 1rem; color:#ccc; }
+        .empty-cart i { font-size:2.5rem; }
+
+        /* TOAST rápido */
+        .toast-rapido {
+            position:fixed; bottom:1rem; left:50%; transform:translateX(-50%);
+            background:#2c1f3e; color:#fff;
+            padding:.5rem 1.2rem; border-radius:20px;
+            font-size:13px; font-weight:500;
+            z-index:999; opacity:0;
+            transition:opacity .2s;
+            pointer-events:none;
+        }
+        .toast-rapido.show { opacity:1; }
+
+        /* RESPONSIVE tablet portrait */
+        @media (max-width: 600px) {
+            .pedido-panel { width:100%; position:fixed; bottom:0; left:0; right:0; height:45vh; border-top:2px solid var(--purple); z-index:100; }
+            .carta { height:55vh; }
             .layout { flex-direction:column; height:auto; }
-            .pedido-panel { width:100%; border-left:none; border-top:1px solid #e0ddd6; max-height:50vh; }
+            .productos-grid { grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); }
         }
     </style>
 </head>
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
-    <a href="<?= APP_URL ?>/mesas" class="btn btn-sm btn-outline-light">
-        <i class="bi bi-arrow-left"></i>
-    </a>
-    <div style="font-weight:500;">
-        Mesa <?= $pedido['mesa_numero'] ?>
-        <span style="opacity:.6; font-size:12px; margin-left:6px;"><?= $pedido['personas'] ?> personas</span>
+    <div>
+        <div class="topbar-mesa">
+            <a href="<?= APP_URL ?>/mesas" style="color:rgba(255,255,255,.5);text-decoration:none;margin-right:8px;">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            Mesa <?= $pedido['mesa_numero'] ?>
+        </div>
+        <div class="topbar-meta"><?= $pedido['personas'] ?> personas · <?= htmlspecialchars($_SESSION['nombre']) ?></div>
     </div>
-    <span style="font-size:12px; opacity:.6;"><?= htmlspecialchars($_SESSION['nombre']) ?></span>
+    <div class="d-flex gap-2 align-items-center">
+        <span style="font-size:12px;opacity:.5;">Pedido #<?= $pedido['id'] ?></span>
+        <a href="<?= APP_URL ?>/logout" style="color:rgba(255,255,255,.4);font-size:18px;">
+            <i class="bi bi-box-arrow-left"></i>
+        </a>
+    </div>
 </div>
 
 <div class="layout">
 
-    <!-- CARTA -->
+    <!-- ── CARTA ── -->
     <div class="carta">
-        <div class="cat-tabs" id="catTabs">
-            <button class="cat-tab active" onclick="filtrarCategoria(0, this)">Todos</button>
+
+        <!-- Tabs categorías -->
+        <div class="cat-scroll" id="catScroll">
+            <button class="cat-tab active" onclick="filtrar(0,this)">
+                <i class="bi bi-grid-fill me-1"></i>Todos
+            </button>
             <?php foreach ($categorias as $cat): ?>
-            <button class="cat-tab" onclick="filtrarCategoria(<?= $cat['id'] ?>, this)">
+            <button class="cat-tab" onclick="filtrar(<?= $cat['id'] ?>,this)"
+                    style="--cat:<?= $cat['color'] ?>">
+                <i class="bi <?= $cat['icono'] ?? 'bi-grid' ?> me-1"></i>
                 <?= htmlspecialchars($cat['nombre']) ?>
             </button>
             <?php endforeach; ?>
         </div>
 
-        <div id="listaProductos">
+        <!-- Grid productos -->
+        <div class="productos-grid" id="gridProductos">
             <?php foreach ($productos as $p): ?>
-            <div class="producto-card" data-cat="<?= $p['categoria_id'] ?>" onclick="agregarProducto(<?= $p['id'] ?>, '<?= addslashes($p['nombre']) ?>', <?= $p['precio'] ?>)">
-                <div style="flex:1; padding-right:.5rem;">
-                    <div class="prod-nombre"><?= htmlspecialchars($p['nombre']) ?></div>
-                    <?php if ($p['descripcion']): ?>
-                    <div class="prod-desc"><?= htmlspecialchars(mb_substr($p['descripcion'], 0, 60)) ?>...</div>
-                    <?php endif; ?>
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="prod-precio">S/ <?= number_format($p['precio'], 2) ?></span>
-                        <span class="prod-tiempo"><i class="bi bi-clock"></i> ~<?= $p['tiempo_prep_min'] ?> min</span>
-                    </div>
-                </div>
-                <button class="btn-agregar"><i class="bi bi-plus"></i></button>
+            <div class="prod-card"
+                 data-cat="<?= $p['categoria_id'] ?>"
+                 data-id="<?= $p['id'] ?>"
+                 data-nombre="<?= htmlspecialchars(addslashes($p['nombre'])) ?>"
+                 data-precio="<?= $p['precio'] ?>"
+                 onclick="agregarProducto(<?= $p['id'] ?>,'<?= addslashes($p['nombre']) ?>',<?= $p['precio'] ?>)">
+                <div class="prod-nombre"><?= htmlspecialchars($p['nombre']) ?></div>
+                <div class="prod-precio">S/ <?= number_format($p['precio'],2) ?></div>
+                <div class="prod-tiempo"><i class="bi bi-clock"></i> ~<?= $p['tiempo_prep_min'] ?> min</div>
             </div>
             <?php endforeach; ?>
         </div>
+
     </div>
 
-    <!-- PANEL PEDIDO -->
+    <!-- ── PANEL PEDIDO ── -->
     <div class="pedido-panel">
+
         <div class="pedido-header">
-            <h6><i class="bi bi-receipt me-2"></i>Pedido #<?= $pedido['id'] ?></h6>
+            <h6><i class="bi bi-receipt me-2"></i>Pedido</h6>
+            <span style="font-size:12px;color:#aaa;" id="contadorItems">0 items</span>
         </div>
 
         <div class="pedido-items" id="pedidoItems">
             <?php if (empty($detalle)): ?>
-            <div class="empty-pedido" id="emptyMsg">
-                <i class="bi bi-bag" style="font-size:2rem;"></i>
-                <p class="mt-2" style="font-size:13px;">Agrega platos del menú</p>
+            <div class="empty-cart" id="emptyCart">
+                <i class="bi bi-basket"></i>
+                <p style="font-size:13px;margin-top:.5rem;">Toca un plato para agregar</p>
             </div>
             <?php else: ?>
-                <?php foreach ($detalle as $item): ?>
-                <div class="pedido-item" id="item-<?= $item['id'] ?>">
-                    <span class="cant"><?= $item['cantidad'] ?>x</span>
-                    <span class="nombre"><?= htmlspecialchars($item['producto_nombre']) ?></span>
-                    <span class="precio">S/ <?= number_format($item['subtotal'], 2) ?></span>
-                    <button class="btn-quitar" onclick="quitarItem(<?= $item['id'] ?>)">
-                        <i class="bi bi-x"></i>
-                    </button>
+            <?php foreach ($detalle as $item): ?>
+            <div class="pedido-item" id="pitem-<?= $item['id'] ?>">
+                <div class="ctrl-cant">
+                    <button class="ctrl-btn" onclick="cambiarCant(<?= $item['id'] ?>,<?= $pedido['id'] ?>,-1)">−</button>
+                    <span class="item-cant" id="cant-<?= $item['id'] ?>"><?= $item['cantidad'] ?></span>
+                    <button class="ctrl-btn" onclick="cambiarCant(<?= $item['id'] ?>,<?= $pedido['id'] ?>,1)">+</button>
                 </div>
-                <?php endforeach; ?>
+                <span class="item-nombre"><?= htmlspecialchars($item['producto_nombre']) ?></span>
+                <span class="item-precio">S/ <?= number_format($item['subtotal'],2) ?></span>
+                <button class="btn-quitar" onclick="quitarItem(<?= $item['id'] ?>,<?= $pedido['id'] ?>)">×</button>
+            </div>
+            <?php endforeach; ?>
             <?php endif; ?>
         </div>
 
         <div class="pedido-totales">
-            <div class="linea"><span>Subtotal</span><span>S/ <span id="subtotal"><?= number_format($pedido['subtotal'], 2) ?></span></span></div>
-            <div class="linea"><span>IGV (18%)</span><span>S/ <span id="igv"><?= number_format($pedido['igv'], 2) ?></span></span></div>
-            <div class="linea"><span>Servicio (10%)</span><span>S/ <span id="servicio"><?= number_format($pedido['servicio'], 2) ?></span></span></div>
-            <div class="total"><span>TOTAL</span><span>S/ <span id="total"><?= number_format($pedido['total'], 2) ?></span></span></div>
+            <div class="tot-row"><span>Subtotal</span><span>S/ <span id="subtotal"><?= number_format($pedido['subtotal'],2) ?></span></span></div>
+            <div class="tot-row"><span>IGV 18%</span><span>S/ <span id="igv"><?= number_format($pedido['igv'],2) ?></span></span></div>
+            <div class="tot-row"><span>Servicio 10%</span><span>S/ <span id="servicio"><?= number_format($pedido['servicio'],2) ?></span></span></div>
+            <div class="tot-final"><span>TOTAL</span><span>S/ <span id="total"><?= number_format($pedido['total'],2) ?></span></span></div>
         </div>
 
         <div class="pedido-footer">
-            <button class="btn-enviar" onclick="enviarCocina()" <?= empty($detalle) ? 'disabled' : '' ?> id="btnEnviar">
-                <i class="bi bi-send me-2"></i>Enviar a cocina
+            <button class="btn-cocina" id="btnCocina"
+                    onclick="enviarCocina()"
+                    <?= empty($detalle) ? 'disabled' : '' ?>>
+                <i class="bi bi-fire"></i>Enviar a cocina
             </button>
+            <?php if (!empty($detalle) && $pedido['total'] > 0): ?>
+            <button class="btn-cuenta" onclick="location.href='<?= APP_URL ?>/caja/cuenta/<?= $pedido['id'] ?>'">
+                <i class="bi bi-receipt me-1"></i>Pedir cuenta
+            </button>
+            <?php endif; ?>
         </div>
-    </div>
 
+    </div>
 </div>
 
+<!-- Toast rápido -->
+<div class="toast-rapido" id="toastRapido"></div>
+
 <script>
-const PEDIDO_ID  = <?= $pedido['id'] ?>;
-const APP_URL    = '<?= APP_URL ?>';
+const PEDIDO_ID = <?= $pedido['id'] ?>;
+const APP_URL   = '<?= APP_URL ?>';
 
-function filtrarCategoria(catId, el) {
+// Filtrar por categoría
+function filtrar(catId, btn) {
     document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-    document.querySelectorAll('.producto-card').forEach(card => {
-        card.style.display = (catId === 0 || parseInt(card.dataset.cat) === catId) ? '' : 'none';
+    btn.classList.add('active');
+    document.querySelectorAll('.prod-card').forEach(c => {
+        c.style.display = (!catId || parseInt(c.dataset.cat) === catId) ? '' : 'none';
     });
 }
 
+// Mostrar toast rápido
+function toast(msg) {
+    const el = document.getElementById('toastRapido');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+// Agregar producto
 function agregarProducto(prodId, nombre, precio) {
+    // Feedback táctil inmediato
+    toast('+ ' + nombre);
+
     fetch(APP_URL + '/pedidos/agregar/' + PEDIDO_ID, {
-        method: 'POST',
-        headers: {'Content-Type':'application/x-www-form-urlencoded'},
-        body: 'producto_id=' + prodId + '&cantidad=1'
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:'producto_id=' + prodId + '&cantidad=1'
     })
     .then(r => r.json())
     .then(data => {
-        if (data.ok) renderDetalle(data.detalle, data.totales);
+        if (data.ok) renderPedido(data.detalle, data.totales);
     });
 }
 
-function quitarItem(detalleId) {
-    fetch(APP_URL + '/pedidos/quitar/' + detalleId, {
-        method: 'POST',
-        headers: {'Content-Type':'application/x-www-form-urlencoded'},
-        body: 'pedido_id=' + PEDIDO_ID
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.ok) renderDetalle(data.detalle, data.totales);
-    });
-}
+// Cambiar cantidad
+function cambiarCant(detalleId, pedidoId, delta) {
+    const cantEl = document.getElementById('cant-' + detalleId);
+    const actual = parseInt(cantEl?.textContent || '1');
 
-function renderDetalle(detalle, totales) {
-    const box = document.getElementById('pedidoItems');
-    document.getElementById('subtotal').textContent = totales.subtotal;
-    document.getElementById('igv').textContent      = totales.igv;
-    document.getElementById('servicio').textContent = totales.servicio;
-    document.getElementById('total').textContent    = totales.total;
-    document.getElementById('btnEnviar').disabled   = detalle.length === 0;
-
-    if (detalle.length === 0) {
-        box.innerHTML = '<div class="empty-pedido"><i class="bi bi-bag" style="font-size:2rem;"></i><p class="mt-2" style="font-size:13px;">Agrega platos del menú</p></div>';
+    if (actual + delta <= 0) {
+        quitarItem(detalleId, pedidoId);
         return;
     }
 
+    // Actualizar visual inmediato
+    if (cantEl) cantEl.textContent = actual + delta;
+
+    fetch(APP_URL + '/pedidos/agregar/' + pedidoId, {
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:'producto_id=0&cantidad=' + delta + '&detalle_id=' + detalleId
+    })
+    .then(r => r.json())
+    .then(data => { if (data.ok) actualizarTotales(data.totales); });
+}
+
+// Quitar item
+function quitarItem(detalleId, pedidoId) {
+    const el = document.getElementById('pitem-' + detalleId);
+    if (el) { el.style.opacity='.3'; el.style.pointerEvents='none'; }
+
+    fetch(APP_URL + '/pedidos/quitar/' + detalleId, {
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:'pedido_id=' + pedidoId
+    })
+    .then(r => r.json())
+    .then(data => { if (data.ok) renderPedido(data.detalle, data.totales); });
+}
+
+// Renderizar lista del pedido
+function renderPedido(detalle, totales) {
+    const box = document.getElementById('pedidoItems');
+    const btn = document.getElementById('btnCocina');
+
+    actualizarTotales(totales);
+    document.getElementById('contadorItems').textContent =
+        detalle.length + (detalle.length === 1 ? ' item' : ' items');
+
+    if (detalle.length === 0) {
+        box.innerHTML = '<div class="empty-cart"><i class="bi bi-basket"></i><p style="font-size:13px;margin-top:.5rem;">Toca un plato para agregar</p></div>';
+        btn.disabled = true;
+        return;
+    }
+
+    btn.disabled = false;
     box.innerHTML = detalle.map(item => `
-        <div class="pedido-item" id="item-${item.id}">
-            <span class="cant">${item.cantidad}x</span>
-            <span class="nombre">${item.producto_nombre}</span>
-            <span class="precio">S/ ${parseFloat(item.subtotal).toFixed(2)}</span>
-            <button class="btn-quitar" onclick="quitarItem(${item.id})"><i class="bi bi-x"></i></button>
+        <div class="pedido-item" id="pitem-${item.id}">
+            <div class="ctrl-cant">
+                <button class="ctrl-btn" onclick="cambiarCant(${item.id},${PEDIDO_ID},-1)">−</button>
+                <span class="item-cant" id="cant-${item.id}">${item.cantidad}</span>
+                <button class="ctrl-btn" onclick="cambiarCant(${item.id},${PEDIDO_ID},1)">+</button>
+            </div>
+            <span class="item-nombre">${item.producto_nombre}</span>
+            <span class="item-precio">S/ ${parseFloat(item.subtotal).toFixed(2)}</span>
+            <button class="btn-quitar" onclick="quitarItem(${item.id},${PEDIDO_ID})">×</button>
         </div>
     `).join('');
 }
 
-function enviarCocina() {
-    alert('✅ Pedido enviado a cocina');
+function actualizarTotales(totales) {
+    document.getElementById('subtotal').textContent = totales.subtotal;
+    document.getElementById('igv').textContent      = totales.igv;
+    document.getElementById('servicio').textContent = totales.servicio;
+    document.getElementById('total').textContent    = totales.total;
 }
+
+function enviarCocina() {
+    toast('✅ Enviado a cocina');
+    document.getElementById('btnCocina').textContent = '✅ En cocina';
+    document.getElementById('btnCocina').disabled = true;
+    setTimeout(() => {
+        document.getElementById('btnCocina').innerHTML = '<i class="bi bi-fire"></i> Enviar a cocina';
+        document.getElementById('btnCocina').disabled = false;
+    }, 2000);
+}
+
+// Contador inicial
+document.getElementById('contadorItems').textContent =
+    <?= count($detalle) ?> + (<?= count($detalle) ?> === 1 ? ' item' : ' items');
 </script>
 
+<script>window.APP_URL = "<?= APP_URL ?>";</script>
+<script src="<?= APP_URL ?>/public/js/notificaciones.js"></script>
 </body>
 </html>

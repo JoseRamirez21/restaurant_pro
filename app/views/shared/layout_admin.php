@@ -194,6 +194,9 @@ $seccion    = explode('/', $url_actual)[0] ?? 'admin';
     <a href="<?= APP_URL ?>/caja"    class="nav-link <?= $seccion === 'caja'    ? 'active' : '' ?>">
         <i class="bi bi-cash-register"></i>Caja
     </a>
+    <a href="<?= APP_URL ?>/cierre" class="nav-link <?= $seccion === 'cierre' ? 'active' : '' ?>">
+        <i class="bi bi-lock"></i>Cierre de caja
+    </a>
 
     <div class="nav-section">Gestión</div>
     <a href="<?= APP_URL ?>/productos" class="nav-link <?= $seccion === 'productos' ? 'active' : '' ?>">
@@ -207,6 +210,9 @@ $seccion    = explode('/', $url_actual)[0] ?? 'admin';
     </a>
     <a href="<?= APP_URL ?>/usuarios" class="nav-link <?= $seccion === 'usuarios' ? 'active' : '' ?>">
         <i class="bi bi-people"></i>Personal
+    </a>
+    <a href="<?= APP_URL ?>/clientes" class="nav-link <?= $seccion === 'clientes' ? 'active' : '' ?>">
+        <i class="bi bi-people-fill"></i>Clientes & CRM
     </a>
     <a href="<?= APP_URL ?>/reservas" class="nav-link <?= $seccion === 'reservas' ? 'active' : '' ?>">
         <i class="bi bi-calendar-check"></i>Reservas
