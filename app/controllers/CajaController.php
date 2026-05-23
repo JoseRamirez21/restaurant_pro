@@ -45,11 +45,12 @@ class CajaController {
         $pedido = Pedido::buscarPorId((int)$pedido_id);
         if (!$pedido) { header('Location: ' . APP_URL . '/caja'); exit; }
 
+        // Cobrar usando subtotal (precio limpio sin IGV ni servicio)
         Pedido::cobrar(
             (int)$pedido_id,
             $_POST['metodo_pago']  ?? 'efectivo',
-            (float)($_POST['monto_pagado'] ?? 0),
-            (float)($_POST['propina']      ?? 0)
+            (float)$pedido['subtotal'], // monto real cobrado
+            0 // sin propina
         );
         header('Location: ' . APP_URL . '/caja/comprobante/' . $pedido_id);
         exit;
