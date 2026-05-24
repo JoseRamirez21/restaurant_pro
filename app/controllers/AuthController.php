@@ -8,8 +8,10 @@ class AuthController {
     }
 
     public function login($param = null) {
-        if (auth()) {
+        // Si ya tiene sesión activa, redirigir a su panel
+        if (isset($_SESSION['usuario_id'])) {
             $this->redirigirPorRol();
+            return;
         }
 
         $error = '';
@@ -34,6 +36,7 @@ class AuthController {
                         $_SESSION['rol']        = $usuario['rol'];
 
                         $this->redirigirPorRol();
+                        return;
                     }
                 } else {
                     $error = 'Correo o contraseña incorrectos.';
@@ -45,7 +48,8 @@ class AuthController {
     }
 
     public function logout($param = null) {
-        sessionDestroy();
+        session_unset();
+        session_destroy();
         header('Location: ' . APP_URL . '/login');
         exit;
     }
@@ -56,6 +60,7 @@ class AuthController {
     }
 
     private function redirigirPorRol(): void {
+        $rol = $_SESSION['rol'] ?? '';
         $destinos = [
             'administrador' => APP_URL . '/admin',
             'supervisor'    => APP_URL . '/admin',
@@ -63,8 +68,8 @@ class AuthController {
             'cocinero'      => APP_URL . '/cocina',
             'cajero'        => APP_URL . '/caja',
         ];
-        $rol = $_SESSION['rol'] ?? 'mesero';
-        header('Location: ' . ($destinos[$rol] ?? APP_URL . '/mesas'));
+        $destino = $destinos[$rol] ?? APP_URL . '/login';
+        header('Location: ' . $destino);
         exit;
     }
 }

@@ -1,5 +1,6 @@
 <?php
-// Detectar página activa para el sidebar
+// Detectar página activa para el sidebar/
+/** @var string $essololectura */
 $url_actual = $_GET['url'] ?? '';
 $seccion    = explode('/', $url_actual)[0] ?? 'admin';
 ?>
@@ -227,7 +228,7 @@ $seccion    = explode('/', $url_actual)[0] ?? 'admin';
     </a>
 
     <div class="nav-section">Sistema</div>
-    <a href="#" class="nav-link">
+    <a href="<?= APP_URL ?>/configuracion" class="nav-link <?= $seccion === 'configuracion' ? 'active' : '' ?>">
         <i class="bi bi-gear"></i>Configuración
     </a>
 
@@ -275,6 +276,11 @@ $seccion    = explode('/', $url_actual)[0] ?? 'admin';
         <div class="d-flex align-items-center gap-2">
             <?php if (!empty($topbar_extra)) echo $topbar_extra; ?>
             <span class="badge bg-success" style="font-size:11px;">● En línea</span>
+            <?php if (esSoloLectura()): ?>
+            <span class="badge bg-warning text-dark" style="font-size:11px;">
+                <i class="bi bi-eye"></i> Solo lectura
+            </span>
+            <?php endif; ?>
             <button class="btn btn-sm btn-outline-secondary" onclick="location.reload()" title="Actualizar datos">
                 <i class="bi bi-arrow-clockwise"></i>
             </button>

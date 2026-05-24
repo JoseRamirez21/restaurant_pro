@@ -28,6 +28,7 @@ $rutas = [
     'clientes'       => 'ClienteController',
     'perfil'         => 'PerfilController',
     'notificaciones' => 'NotificacionController',
+    'configuracion'  => 'ConfiguracionController',
     'sin-acceso'     => 'AuthController',
 ];
 

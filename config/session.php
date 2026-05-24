@@ -10,6 +10,10 @@ function authRol(string ...$roles): bool {
     return in_array($_SESSION['rol'], $roles);
 }
 
+function esSoloLectura(): bool {
+    return isset($_SESSION['rol']) && $_SESSION['rol'] === 'supervisor';
+}
+
 function requireAuth(): void {
     if (!auth()) {
         header('Location: ' . APP_URL . '/login');
@@ -20,6 +24,13 @@ function requireAuth(): void {
 function requireRol(string ...$roles): void {
     requireAuth();
     if (!authRol(...$roles)) {
+        header('Location: ' . APP_URL . '/sin-acceso');
+        exit;
+    }
+}
+
+function bloquearSupervisor(): void {
+    if (esSoloLectura()) {
         header('Location: ' . APP_URL . '/sin-acceso');
         exit;
     }
