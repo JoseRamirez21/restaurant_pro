@@ -23,6 +23,7 @@ $rutas = [
     'cierre'         => 'CierreCajaController',
     'usuarios'       => 'UsuarioController',
     'reportes'       => 'ReporteController',
+    'analitica'      => 'AnaliticaController',
     'reservas'       => 'ReservaController',
     'inventario'     => 'InventarioController',
     'clientes'       => 'ClienteController',
