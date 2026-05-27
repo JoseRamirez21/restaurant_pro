@@ -31,6 +31,7 @@ $rutas = [
     'notificaciones' => 'NotificacionController',
     'configuracion'  => 'ConfiguracionController',
     'carta'          => 'CartaController',
+    'export'         => 'ExportController',
     'sin-acceso'     => 'AuthController',
 ];
 
@@ -52,16 +53,11 @@ $obj = new $clase();
 
 if ($controlador === 'logout') { $obj->logout(); exit; }
 
-// Caso especial: carta/1 carta/2 etc — el número es el mesa_id
+// Carta pública — el número es el mesa_id
 if ($controlador === 'carta') {
-    // Si accion es numérico es un mesa_id → mostrar carta pública
-    if (is_numeric($accion)) {
-        $obj->index((int)$accion);
-    } elseif (method_exists($obj, $accion)) {
-        $obj->$accion($param);
-    } else {
-        $obj->index(null);
-    }
+    if (is_numeric($accion)) { $obj->index((int)$accion); }
+    elseif (method_exists($obj, $accion)) { $obj->$accion($param); }
+    else { $obj->index(null); }
     exit;
 }
 

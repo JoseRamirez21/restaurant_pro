@@ -136,7 +136,13 @@
 
         <!-- Historial de cierres -->
         <div class="cierre-card">
-            <h6 class="fw-600 mb-3"><i class="bi bi-clock-history me-2"></i>Historial de cierres</h6>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+            <h6 class="fw-600 mb-0"><i class="bi bi-clock-history me-2"></i>Historial de cierres</h6>
+            <a href="<?= APP_URL ?>/export/cierres"
+               class="btn btn-sm" style="background:#2e7d32;color:#fff;border-radius:8px;font-size:12px;">
+                <i class="bi bi-file-earmark-excel me-1"></i>Exportar Excel
+            </a>
+        </div>
             <?php if (empty($historial)): ?>
             <div style="text-align:center;color:#ccc;padding:1.5rem;">Sin cierres registrados</div>
             <?php else: ?>

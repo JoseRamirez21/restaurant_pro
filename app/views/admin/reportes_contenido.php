@@ -45,9 +45,20 @@ $r = $datos['resumen'];
     </form>
     <?php endif; ?>
 
-    <button onclick="window.print()" class="btn btn-sm btn-outline-secondary ms-auto">
-        <i class="bi bi-printer me-1"></i>Imprimir
-    </button>
+    <div class="d-flex gap-2 ms-auto flex-wrap">
+        <a href="<?= APP_URL ?>/export/pdf?periodo=<?= $periodo ?>&desde=<?= $desde ?>&hasta=<?= $hasta ?>"
+           target="_blank"
+           class="btn btn-sm" style="background:#c62828;color:#fff;border-radius:8px;">
+            <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+        </a>
+        <a href="<?= APP_URL ?>/export/excel?periodo=<?= $periodo ?>&desde=<?= $desde ?>&hasta=<?= $hasta ?>"
+           class="btn btn-sm" style="background:#2e7d32;color:#fff;border-radius:8px;">
+            <i class="bi bi-file-earmark-excel me-1"></i>Excel
+        </a>
+        <button onclick="window.print()" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-printer me-1"></i>Imprimir
+        </button>
+    </div>
 </div>
 
 <div style="font-size:12px;color:#aaa;margin-bottom:1rem;">
