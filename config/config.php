@@ -1,7 +1,7 @@
 <?php
 define('APP_NAME',     'RestaurantePro');
 define('APP_VERSION',  '1.0.0');
-define('APP_URL',      'http://localhost/restaurant_pro');
+define('APP_URL', 'http://192.168.1.162/restaurant_pro');
 define('MONEDA',       'S/');
 define('TIMEZONE',     'America/Lima');
 define('DEBUG_MODE',   true);

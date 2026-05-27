@@ -77,6 +77,9 @@ $solo_lec   = esSoloLectura();
     <a href="<?= APP_URL ?>/cierre"  class="nav-link <?= $seccion==='cierre' ?'active':'' ?>"><i class="bi bi-lock"></i>Cierre de caja</a>
 
     <div class="nav-section">Gestión</div>
+    <a href="<?= APP_URL ?>/carta/qr" class="nav-link <?= $seccion==='carta' ?'active':'' ?>">
+        <i class="bi bi-qr-code"></i>QR Carta digital
+    </a>
     <a href="<?= APP_URL ?>/productos"  class="nav-link <?= $seccion==='productos'  ?'active':'' ?>"><i class="bi bi-menu-button-wide"></i>Carta & Menú</a>
     <a href="<?= APP_URL ?>/categorias" class="nav-link <?= $seccion==='categorias' ?'active':'' ?>"><i class="bi bi-tags"></i>Categorías</a>
     <a href="<?= APP_URL ?>/inventario" class="nav-link <?= $seccion==='inventario' ?'active':'' ?>"><i class="bi bi-box-seam"></i>Inventario</a>
