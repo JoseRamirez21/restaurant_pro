@@ -43,8 +43,6 @@ class PedidoController {
             'detalle' => Pedido::detalle((int)$pedido_id),
             'totales' => [
                 'subtotal' => number_format($pedido['subtotal'], 2),
-                'igv'      => number_format($pedido['igv'], 2),
-                'servicio' => number_format($pedido['servicio'], 2),
                 'total'    => number_format($pedido['total'], 2),
             ]
         ]);
@@ -63,8 +61,6 @@ class PedidoController {
             'detalle' => Pedido::detalle($pedido_id),
             'totales' => [
                 'subtotal' => number_format($pedido['subtotal'], 2),
-                'igv'      => number_format($pedido['igv'], 2),
-                'servicio' => number_format($pedido['servicio'], 2),
                 'total'    => number_format($pedido['total'], 2),
             ]
         ]);

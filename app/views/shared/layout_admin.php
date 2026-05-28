@@ -222,9 +222,9 @@ body{
     <?php if (!empty($page_styles)) echo $page_styles; ?>
 </head>
 <body>
-
+ 
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="cerrarSidebar()"></div>
-
+ 
 <!-- SIDEBAR -->
 <nav class="sidebar" id="sidebar">
     <div class="sidebar-brand">
@@ -234,7 +234,7 @@ body{
             <small><?= $solo_lec ? 'Supervisor' : 'Administración' ?></small>
         </div>
     </div>
-
+ 
     <div class="nav-section">Principal</div>
     <a href="<?= APP_URL ?>/admin"   class="nav-link <?= $seccion==='admin'  ?'active':'' ?>"><i class="bi bi-speedometer2"></i>Dashboard</a>
     <a href="<?= APP_URL ?>/mesas"   class="nav-link <?= $seccion==='mesas'  ?'active':'' ?>"><i class="bi bi-layout-grid"></i>Mesas</a>
@@ -244,7 +244,7 @@ body{
     <a href="<?= APP_URL ?>/cocina"  class="nav-link <?= $seccion==='cocina' ?'active':'' ?>"><i class="bi bi-fire"></i>Cocina</a>
     <a href="<?= APP_URL ?>/caja"    class="nav-link <?= $seccion==='caja'   ?'active':'' ?>"><i class="bi bi-cash-register"></i>Caja</a>
     <a href="<?= APP_URL ?>/cierre"  class="nav-link <?= $seccion==='cierre' ?'active':'' ?>"><i class="bi bi-lock"></i>Cierre de caja</a>
-
+ 
     <div class="nav-section">Gestión</div>
     <a href="<?= APP_URL ?>/carta/qr" class="nav-link <?= $seccion==='carta' ?'active':'' ?>">
         <i class="bi bi-qr-code"></i>QR Carta digital
@@ -257,16 +257,16 @@ body{
     <?php if (!$solo_lec): ?>
     <a href="<?= APP_URL ?>/usuarios"   class="nav-link <?= $seccion==='usuarios'   ?'active':'' ?>"><i class="bi bi-people"></i>Personal</a>
     <?php endif; ?>
-
+ 
     <div class="nav-section">Reportes</div>
     <a href="<?= APP_URL ?>/reportes"  class="nav-link <?= $seccion==='reportes'  ?'active':'' ?>"><i class="bi bi-bar-chart-line"></i>Reportes & Ventas</a>
     <a href="<?= APP_URL ?>/analitica" class="nav-link <?= $seccion==='analitica' ?'active':'' ?>"><i class="bi bi-graph-up"></i>Analítica</a>
-
+ 
     <?php if (!$solo_lec): ?>
     <div class="nav-section">Sistema</div>
     <a href="<?= APP_URL ?>/configuracion" class="nav-link <?= $seccion==='configuracion' ?'active':'' ?>"><i class="bi bi-gear"></i>Configuración</a>
     <?php endif; ?>
-
+ 
     <div class="sidebar-footer">
         <div class="user-pill">
             <div class="user-avatar"><?= strtoupper(substr($_SESSION['nombre']??'A',0,1)) ?></div>
@@ -285,10 +285,10 @@ body{
         </div>
     </div>
 </nav>
-
+ 
 <!-- MAIN -->
 <div class="main">
-
+ 
     <!-- Banner solo lectura -->
     <?php if ($solo_lec): ?>
     <div class="banner-solo-lec">
@@ -296,7 +296,7 @@ body{
         <strong>Modo supervisor</strong> — Puedes ver todo pero no modificar datos del sistema.
     </div>
     <?php endif; ?>
-
+ 
     <!-- TOPBAR -->
     <div class="topbar">
         <div class="d-flex align-items-center gap-3">
@@ -322,5 +322,6 @@ body{
             </button>
         </div>
     </div>
-
+ 
+    <div class="content">
     <div class="content">

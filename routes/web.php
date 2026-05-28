@@ -32,6 +32,7 @@ $rutas = [
     'configuracion'  => 'ConfiguracionController',
     'carta'          => 'CartaController',
     'export'         => 'ExportController',
+    'impresora'      => 'ImpresoraController',
     'sin-acceso'     => 'AuthController',
 ];
 
@@ -53,7 +54,6 @@ $obj = new $clase();
 
 if ($controlador === 'logout') { $obj->logout(); exit; }
 
-// Carta pública — el número es el mesa_id
 if ($controlador === 'carta') {
     if (is_numeric($accion)) { $obj->index((int)$accion); }
     elseif (method_exists($obj, $accion)) { $obj->$accion($param); }

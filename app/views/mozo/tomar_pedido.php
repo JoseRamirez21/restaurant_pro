@@ -313,12 +313,12 @@
             <?php endif; ?>
         </div>
 
-        <div class="pedido-totales">
-            <div class="tot-row"><span>Subtotal</span><span>S/ <span id="subtotal"><?= number_format($pedido['subtotal'],2) ?></span></span></div>
-            <div class="tot-row"><span>IGV 18%</span><span>S/ <span id="igv"><?= number_format($pedido['igv'],2) ?></span></span></div>
-            <div class="tot-row"><span>Servicio 10%</span><span>S/ <span id="servicio"><?= number_format($pedido['servicio'],2) ?></span></span></div>
-            <div class="tot-final"><span>TOTAL</span><span>S/ <span id="total"><?= number_format($pedido['total'],2) ?></span></span></div>
-        </div>
+      <div class="pedido-totales">
+    <div class="tot-final">
+        <span>TOTAL</span>
+        <span>S/ <span id="total"><?= number_format($pedido['total'],2) ?></span></span>
+    </div>
+</div>
 
         <div class="pedido-footer">
             <button class="btn-cocina" id="btnCocina"
@@ -443,10 +443,7 @@ function renderPedido(detalle, totales) {
 }
 
 function actualizarTotales(totales) {
-    document.getElementById('subtotal').textContent = totales.subtotal;
-    document.getElementById('igv').textContent      = totales.igv;
-    document.getElementById('servicio').textContent = totales.servicio;
-    document.getElementById('total').textContent    = totales.total;
+    document.getElementById('total').textContent = totales.total;
 }
 
 function enviarCocina() {

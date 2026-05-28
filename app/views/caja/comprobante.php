@@ -1,9 +1,7 @@
 <?php
 /** @var array $pedido */
 /** @var array $detalle */
-?>
-
-<!DOCTYPE html>
+?><!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -128,13 +126,28 @@
     </div>
 </div>
 
+<script>
+function imprimirTermica() {
+    const btn = document.getElementById('btnTermica');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Imprimiendo...';
+    fetch('<?= APP_URL ?>/impresora/boleta/<?= $pedido['id'] ?>', { method: 'POST' })
+    .then(r => r.json())
+    .then(d => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-receipt me-1"></i> Térmica';
+        if (d.ok) {
+            alert('✅ Boleta enviada a la impresora');
+        } else {
+            alert('❌ Error: ' + (d.error || 'No se pudo imprimir'));
+        }
+    })
+    .catch(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-receipt me-1"></i> Térmica';
+        alert('❌ No se pudo conectar con la impresora');
+    });
+}
+</script>
 </body>
 </html>
-
-
-
-
-
-
-
-

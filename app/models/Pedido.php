@@ -177,7 +177,7 @@ class Pedido {
 
         // Agregar propina al servicio si hay
         if ($propina > 0) {
-            $upd = $db->prepare("UPDATE pedidos SET servicio = servicio + :propina, total = total + :propina2 WHERE id = :id");
+            $upd = $db->prepare("UPDATE pedidos SET servicio = servicio + :propinatotal = total + :propina2 WHERE id = :id");
             $upd->execute([':propina' => $propina, ':propina2' => $propina, ':id' => $id]);
         }
 
