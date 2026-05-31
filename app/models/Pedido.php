@@ -99,13 +99,10 @@ class Pedido {
         $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare("SELECT SUM(subtotal) AS subtotal FROM detalle_pedidos WHERE pedido_id = :id AND estado != 'cancelado'");
         $stmt->execute([':id' => $pedido_id]);
-        $subtotal = (float) ($stmt->fetch()['subtotal'] ?? 0);
-        $igv      = round($subtotal * 0.18, 2);
-        $servicio = round($subtotal * 0.10, 2);
-        $total    = round($subtotal + $igv + $servicio, 2);
+        $subtotal = round((float) ($stmt->fetch()['subtotal'] ?? 0), 2);
 
-        $upd = $db->prepare("UPDATE pedidos SET subtotal = :sub, igv = :igv, servicio = :srv, total = :total WHERE id = :id");
-        $upd->execute([':sub' => $subtotal, ':igv' => $igv, ':srv' => $servicio, ':total' => $total, ':id' => $pedido_id]);
+        $upd = $db->prepare("UPDATE pedidos SET subtotal = :sub, igv = 0, servicio = 0, total = :sub2 WHERE id = :id");
+        $upd->execute([':sub' => $subtotal, ':sub2' => $subtotal, ':id' => $pedido_id]);
     }
 
     public static function cambiarEstado(int $id, string $estado): bool {

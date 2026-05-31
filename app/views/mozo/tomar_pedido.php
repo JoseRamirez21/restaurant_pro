@@ -1,10 +1,4 @@
-<?php
-// Solo para autocompletado del editor — no afecta el sistema
-/** @var array $pedido */
-/** @var array $categorias */
-/** @var array $productos */
-/** @var array $detalle */
-?><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -313,12 +307,9 @@
             <?php endif; ?>
         </div>
 
-      <div class="pedido-totales">
-    <div class="tot-final">
-        <span>TOTAL</span>
-        <span>S/ <span id="total"><?= number_format($pedido['total'],2) ?></span></span>
-    </div>
-</div>
+        <div class="pedido-totales">
+            <div class="tot-final"><span>TOTAL</span><span>S/ <span id="total"><?= number_format($pedido['subtotal'],2) ?></span></span></div>
+        </div>
 
         <div class="pedido-footer">
             <button class="btn-cocina" id="btnCocina"
@@ -443,7 +434,7 @@ function renderPedido(detalle, totales) {
 }
 
 function actualizarTotales(totales) {
-    document.getElementById('total').textContent = totales.total;
+    document.getElementById('total').textContent = totales.subtotal;
 }
 
 function enviarCocina() {

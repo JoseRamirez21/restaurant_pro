@@ -55,7 +55,7 @@
         <?php endforeach; ?>
         <div class="total-box">
             <span class="total-label">TOTAL PAGADO</span>
-            <span class="total-monto">S/ <?= number_format($pedido['total'], 2) ?></span>
+            <span class="total-monto">S/ <?= number_format($pedido['subtotal'], 2) ?></span>
         </div>
         <?php
         $iconos = ['efectivo'=>'💵','tarjeta'=>'💳','yape'=>'📱','plin'=>'📲','transferencia'=>'🏦'];
